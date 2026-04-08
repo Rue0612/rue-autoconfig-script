@@ -44,9 +44,7 @@ if test "$answer" != "y"
 	end
 	printf "\n===> c) 1) DONE\n
 
-	\n===> f) c) Adding your SSH key to your GitHub Account\n
-
-	"
+	\n===> f) c) Adding your SSH key to your GitHub Account"
 
 	set attempt 1
 	while test $attempt -le $MAX_SSH_ATTEMPTS
@@ -59,13 +57,13 @@ if test "$answer" != "y"
 		read -P "Press enter when you are finished."
 
 		printf "\n===> TESTING SSH CONNECTION\n"
-		ssh -T git@github.com >/dev/null 2>&1
+		ssh -T git@github.com
 		if test $status -eq 1
 			break
 		end
 
 		printf "\n===> CONNECTION FAILED, trying again...\n"
-		printf "\nERROR $gitoutput\n"
+		printf "\nERROR $status\n"
 		set attempt (math $attempt + 1)
 	end
 	
@@ -89,9 +87,14 @@ rm -rf ~/.config/nvim/
 git clone git@github.com:Rue0612/kickstart.nvim.git ~/.config/nvim/
 printf "\n===> e) DONE\n"
 
-printf "\n\n===> f) Configuring Vesktop\n"
+printf "\n\n===> f) Configuring Alacritty\n"
+rm -rf ~/.config/alacritty/
+git clone git@github.com:Rue0612/rue-alacritty-config.git ~/.config/alacritty/
+printf "\n===> f) DONE\n"
+
+printf "\n\n===> g) Configuring Vesktop\n"
 rm -rf /home/$USER_NAME/.var/app/dev.vencord.Vesktop/config/vesktop/themes
 git clone git@github.com:Rue0612/rue-vesktop-theme.git /home/$USER_NAME/.var/app/dev.vencord.Vesktop/config/vesktop/themes
-printf "\n===> f) DONE\n"
+printf "\n===> g) DONE\n"
 
 printf "\n\n\n===> Everything configured! Have fun!\n"
