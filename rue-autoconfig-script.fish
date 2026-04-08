@@ -2,8 +2,9 @@
 
 set GITHUB_EMAIL '69476182+Rue0612@users.noreply.github.com'
 set GITHUB_NAME 'Rue Coimbra'
-set USER_NAME 'rue'
+set USER_NAME (whoami)
 set MAX_SSH_ATTEMPTS 3
+set CONFIG_FILE /etc/sddm.conf
 
 printf "\n===> Initiating auto config...\n"
 
@@ -39,12 +40,10 @@ if test "$answer" != "y"
 
 	printf "\n===> c) 1) Creating SSH keys\n"
 	ssh-keygen -t ed25519 -C "$GITHUB_EMAIL"
-	if not pgrep -u (id -u) ssh-agent > /dev/null
-	    eval (ssh-agent -c)
-	end
+	ssh-add ~/.ssh/id_ed25519
 	printf "\n===> c) 1) DONE\n
 
-	\n===> f) c) Adding your SSH key to your GitHub Account"
+	\n===> c) 2) Adding your SSH key to your GitHub Account"
 
 	set attempt 1
 	while test $attempt -le $MAX_SSH_ATTEMPTS
@@ -81,7 +80,7 @@ printf "\n\n===> d) Configuring Niri Compositor\n"
 rm -rf ~/.config/niri
 git clone git@github.com:Rue0612/rue-niri-config.git ~/.config/niri
 printf "\n===> d) DONE\n"
-
+ssh-add ~/.ssh/id_ed25519
 printf "\n\n===> e) Configuring Neovim\n"
 rm -rf ~/.config/nvim/
 git clone git@github.com:Rue0612/kickstart.nvim.git ~/.config/nvim/
@@ -95,6 +94,29 @@ printf "\n===> f) DONE\n"
 printf "\n\n===> g) Configuring Vesktop\n"
 rm -rf /home/$USER_NAME/.var/app/dev.vencord.Vesktop/config/vesktop/themes
 git clone git@github.com:Rue0612/rue-vesktop-theme.git /home/$USER_NAME/.var/app/dev.vencord.Vesktop/config/vesktop/themes
-printf "\n===> g) DONE\n"
+printf "\n===> g) DONE\n"ssh-add ~/.ssh/id_ed25519
+
+printf "\n\n===> h) Configuring keymaps for lockscren\n"
+printf "KEYMAP=colemak" | sudo tee /etc/vconsole.conf
+sudo mkinitcpio -P
+printf "\n===> h) DONE\n"
+
+printf "\n\n===>i) Adding Autologin config\n"
+if test -f $CONFIG_FILE
+    if grep -q "\[Autologin\]" $CONFIG_FILE
+        printf "Autologin section already exists, updating...\n"
+        sudo sed -i "s/^User=.*/User=$USER_NAME/" $CONFIG_FILE
+        sudo sed -i "s/^Session=.*/Session=niri/" $CONFIG_FILE
+    else
+        printf "Appending Autologin section...\n"
+        printf "\n[Autologin]\nUser=$USER_NAME\nSession=niri" | sudo tee -a $CONFIG_FILE
+    end
+else
+    printf "Creating $CONFIG_FILE...\n"
+    printf "[Autologin]\nUser=$USER_NAME\nSession=niri" | sudo tee $CONFIG_FILE
+end
+
+printf "Done! Reboot to apply.\n"
+printf "\n\n===>i) DONE"
 
 printf "\n\n\n===> Everything configured! Have fun!\n"
