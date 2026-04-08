@@ -37,7 +37,7 @@ if test "$answer" != "y"
 	git config --global user.name "$GITHUB_NAME"
 	git config --global user.email "$GITHUB_EMAIL"
 
-	printf "\n==> c) 1) Creating SSH keys\n"
+	printf "\n===> c) 1) Creating SSH keys\n"
 	ssh-keygen -t ed25519 -C "$GITHUB_EMAIL"
 	if not pgrep -u (id -u) ssh-agent > /dev/null
 	    eval (ssh-agent -c)
