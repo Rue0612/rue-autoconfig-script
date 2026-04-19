@@ -119,4 +119,15 @@ end
 printf "Done! Reboot to apply.\n"
 printf "\n\n===>i) DONE"
 
+printf "\n\n===j) Adding fish config\n"
+rm -rf ~/.config/fish/
+git clone git@github.com:Rue0612/rue-fish-config.git ~/.config/fish/
+printf "\n===j) DONE!"
+
+printf "\n\n===k) Adding fastfetch config\n"
+rm -rf ~/.config/fastfetch/
+mkdir ~/.config/fastfetch/
+git clone git@github.com:Rue0612/rue-fastfetch-config.git ~/.config/fastfetch/
+printf "\n===k) DONE!"
+
 printf "\n\n\n===> Everything configured! Have fun!\n"
