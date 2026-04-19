@@ -14,7 +14,7 @@ printf "\n===> Initiating auto config...\n"
 printf "\n===> a) Installing necessary packages
 (also autoinstalling apps)\n"
 sudo pacman -Syu --noconfirm --needed \
-	helium-browser-bin steam \
+	helium-browser-bin steam proton-cachyos-slr\
 	git ttf-jetbrains-mono-nerd flatpak \
 	neovim gcc make ripgrep fd tree-sitter-cli unzip wl-clipboard
 printf "\n===> a) DONE\n"
