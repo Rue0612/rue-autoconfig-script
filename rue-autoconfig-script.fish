@@ -130,4 +130,8 @@ mkdir ~/.config/fastfetch/
 git clone git@github.com:Rue0612/rue-fastfetch-config.git ~/.config/fastfetch/
 printf "\n===k) DONE!"
 
+printf "\n\n===l) Configuring Noctalia Shell\n"
+cp ./backup-noctalia-shell-config.json ~/.config/noctalia/settings.json
+printf "\n===l) DONE!"
+
 printf "\n\n\n===> Everything configured! Have fun!\n"
