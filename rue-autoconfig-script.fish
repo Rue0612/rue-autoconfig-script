@@ -105,8 +105,11 @@ printf "\n\n===>i) Adding Autologin config\n"
 if test -f $CONFIG_FILE
     if grep -q "\[Autologin\]" $CONFIG_FILE
         printf "Autologin section already exists, updating...\n"
-        sudo sed -i "s/^User=.*/User=$USER_NAME/" $CONFIG_FILE
-        sudo sed -i "s/^Session=.*/Session=niri/" $CONFIG_FILE
+        # Remove as linhas antigas para evitar duplicatas e insere as novas
+        sudo sed -i '/^User=/d' "$CONFIG_FILE"
+        sudo sed -i '/^Session=/d' "$CONFIG_FILE"
+        # Adiciona logo abaixo do cabeçalho [Autologin]
+        sudo sed -i '/\[Autologin\]/a User='$USER_NAME'\nSession=niri' "$CONFIG_FILE"
     else
         printf "Appending Autologin section...\n"
         printf "\n[Autologin]\nUser=$USER_NAME\nSession=niri" | sudo tee -a $CONFIG_FILE
@@ -115,6 +118,8 @@ else
     printf "Creating $CONFIG_FILE...\n"
     printf "[Autologin]\nUser=$USER_NAME\nSession=niri" | sudo tee $CONFIG_FILE
 end
+printf "\nRemoving keyring...."
+rm ~/.local/share/keyrings/login.keyring
 
 printf "Done! Reboot to apply.\n"
 printf "\n\n===>i) DONE"
