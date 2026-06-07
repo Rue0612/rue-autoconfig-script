@@ -23,6 +23,8 @@ printf "\n\n===> b) Installing flatpak packages and apps\n"
 flatpak install -y flathub dev.vencord.Vesktop io.bassi.Amberol io.github.wivrn.wivrn
 printf "\n===> b) DONE\n"
 
+# Git
+# Github
 printf "\n\n ===> c) Configuring git\n"
 read -P "Do you wanna configure Niri first? (In case keyboard not working) (Y\n): " answer
 if test "$answer" != "n"
@@ -33,7 +35,7 @@ if test "$answer" != "n"
 else
 	printf "\nOk! Skiping Niri configuration!\n"
 end
-read -P "Do you want to skip the git configuration? (y\n): " answer
+read -P "Do you want to skip the git configuration? (y\N): " answer
 if test "$answer" != "y"
 	git config --global user.name "$GITHUB_NAME"
 	git config --global user.email "$GITHUB_EMAIL"
@@ -76,54 +78,31 @@ else
 end
 printf "\n===> c) DONE\n"
 
+# Niri
 printf "\n\n===> d) Configuring Niri Compositor\n"
 rm -rf ~/.config/niri
 git clone git@github.com:Rue0612/rue-niri-config.git ~/.config/niri
 printf "\n===> d) DONE\n"
-ssh-add ~/.ssh/id_ed25519
+
+# Neovim
 printf "\n\n===> e) Configuring Neovim\n"
 rm -rf ~/.config/nvim/
 git clone git@github.com:Rue0612/kickstart.nvim.git ~/.config/nvim/
 printf "\n===> e) DONE\n"
 
+# Alacritty
 printf "\n\n===> f) Configuring Alacritty\n"
 rm -rf ~/.config/alacritty/
 git clone git@github.com:Rue0612/rue-alacritty-config.git ~/.config/alacritty/
 printf "\n===> f) DONE\n"
 
+# Vesktop
 printf "\n\n===> g) Configuring Vesktop\n"
 rm -rf /home/$USER_NAME/.var/app/dev.vencord.Vesktop/config/vesktop/themes
 git clone git@github.com:Rue0612/rue-vesktop-theme.git /home/$USER_NAME/.var/app/dev.vencord.Vesktop/config/vesktop/themes
-printf "\n===> g) DONE\n"ssh-add ~/.ssh/id_ed25519
+printf "\n===> g) DONE\n"
 
-printf "\n\n===> h) Configuring keymaps for lockscren\n"
-printf "KEYMAP=colemak" | sudo tee /etc/vconsole.conf
-sudo mkinitcpio -P
-printf "\n===> h) DONE\n"
-
-printf "\n\n===>i) Adding Autologin config\n"
-if test -f $CONFIG_FILE
-    if grep -q "\[Autologin\]" $CONFIG_FILE
-        printf "Autologin section already exists, updating...\n"
-        # Remove as linhas antigas para evitar duplicatas e insere as novas
-        sudo sed -i '/^User=/d' "$CONFIG_FILE"
-        sudo sed -i '/^Session=/d' "$CONFIG_FILE"
-        # Adiciona logo abaixo do cabeçalho [Autologin]
-        sudo sed -i '/\[Autologin\]/a User='$USER_NAME'\nSession=niri' "$CONFIG_FILE"
-    else
-        printf "Appending Autologin section...\n"
-        printf "\n[Autologin]\nUser=$USER_NAME\nSession=niri" | sudo tee -a $CONFIG_FILE
-    end
-else
-    printf "Creating $CONFIG_FILE...\n"
-    printf "[Autologin]\nUser=$USER_NAME\nSession=niri" | sudo tee $CONFIG_FILE
-end
-printf "\nRemoving keyring...."
-rm ~/.local/share/keyrings/login.keyring
-
-printf "Done! Reboot to apply.\n"
-printf "\n\n===>i) DONE"
-
+# Fish & Fastfetch
 printf "\n\n===j) Adding fish config\n"
 rm -rf ~/.config/fish/
 git clone git@github.com:Rue0612/rue-fish-config.git ~/.config/fish/
@@ -135,6 +114,7 @@ mkdir ~/.config/fastfetch/
 git clone git@github.com:Rue0612/rue-fastfetch-config.git ~/.config/fastfetch/
 printf "\n===k) DONE!"
 
+#Noctalia Shell
 printf "\n\n===l) Configuring Noctalia Shell\n"
 cp ./backup-noctalia-shell-config.json ~/.config/noctalia/settings.json
 printf "\n===l) DONE!"
