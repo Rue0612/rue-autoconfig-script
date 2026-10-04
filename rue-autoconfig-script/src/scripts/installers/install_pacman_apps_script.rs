@@ -1,7 +1,7 @@
-use crate::scripts::comand_error_enum::CommandError;
+use crate::scripts::script_error::ScriptError;
 use std::process::Command;
 
-pub fn install_pacman_apps() -> Result<(), CommandError> {
+pub fn install_pacman_apps() -> Result<(), ScriptError> {
     let pacman_apps = [
         "proton-cachyos-slr",      // system (gaming)
         "ttf-jetbrains-mono-nerd", // system
@@ -23,11 +23,11 @@ pub fn install_pacman_apps() -> Result<(), CommandError> {
         .args(["pacman", "-S", "--needed", "--noconfirm"])
         .args(pacman_apps)
         .status()
-        .map_err(CommandError::CouldNotStart)?;
+        .map_err(ScriptError::CouldNotStart)?;
 
     if status.success() {
         Ok(())
     } else {
-        Err(CommandError::ComandFailed(status))
+        Err(ScriptError::ComandFailed(status))
     }
 }
