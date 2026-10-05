@@ -1,3 +1,5 @@
+use std::process::Command;
+
 use crate::scripts::script_error::ScriptError;
 
 //rustup default stable
