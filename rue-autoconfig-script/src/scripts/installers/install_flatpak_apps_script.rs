@@ -3,7 +3,7 @@ use std::process::Command;
 
 pub fn install_flatpack_apps() -> Result<(), ScriptError> {
     let flatpak_apps = [
-        "io.github.wivrn.wvrn", // workspace apps
+        "io.github.wivrn.wivrn", // workspace apps
         "com.github.tchx84.Flatseal",
         "app.zen_browser.zen",
     ];

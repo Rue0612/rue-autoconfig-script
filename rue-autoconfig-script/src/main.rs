@@ -1,15 +1,18 @@
 mod scripts;
 mod util;
 
+use std::io;
+
 use crate::{
     scripts::{
         git_scripts::{
+            configure_alacritty_script::configure_alacritty_with_shh,
             configure_fastfetch_script::configure_fastfatch_with_ssh,
             configure_fish_script::configure_fish_script_with_ssh,
-            configure_git_info,
+            configure_git_info_script::configure_git_info,
             configure_niri_script::{configure_niri, configure_niri_with_ssh},
             configure_nvim_script::configure_nvim_with_ssh,
-            configure_ssh_script::{configure_github_shh, test_github_ssh_connection},
+            configure_ssh_script::{configure_git_shh, copy_git_ssh, test_github_ssh_connection},
         },
         installers::{
             install_aur_apps_script::install_aur_apps,
@@ -171,9 +174,10 @@ fn main() {
     }
 
     println!("\n\nAll done!!!! Now, do you want to configure ssh?");
+    let mut is_github_configured = true;
     if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::Yes {
         loop {
-            match configure_git_info() {
+            let is_gitinfo_configured = match configure_git_info() {
                 Err(ScriptError::CouldNotStart(e)) => {
                     println!("An Error ocurred! It seems that git wasnt able to start.... Waaaaa?");
                     println!("{e}");
@@ -181,6 +185,7 @@ fn main() {
                     if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
                         break;
                     }
+                    false
                 }
                 Err(ScriptError::ComandFailed(e)) => {
                     println!(
@@ -191,95 +196,137 @@ fn main() {
                     if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
                         break;
                     }
+                    false
                 }
                 Ok(_) => {
                     println!("All clear!! Git info configured!");
-                    break;
+                    true
                 }
-            }
-        }
+            };
 
-        let mut is_shh_configured = false;
-
-        loop {
-            match configure_github_shh() {
-                Err(GitScriptError::HomeNotAvailable(e)) => {
-                    println!("It seem that there is no home for me... Im kinda homelesss......");
-                    println!("{e}");
-                    println!("Would you like to try again?");
-                    if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
-                        break;
-                    }
-                }
-                Err(GitScriptError::CouldNotStart(e)) => {
-                    println!("An Error ocurred! It seems that something wasnt able to start...");
-                    println!("{e}");
-                    println!("Would you like to try again?");
-                    if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
-                        break;
-                    }
-                }
-                Err(GitScriptError::ComandFailed(e)) => {
-                    println!(
-                        "An Error ocurred! It seems that something wasnt able to execute for complete..."
-                    );
-                    println!("{e}");
-                    println!("Would you like to try again?");
-                    if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
-                        break;
-                    }
-                }
-                Ok(_) => {
-                    println!("All clear!! SHH configured!");
-                    println!("Now, we will try to conect to github!");
-                    match test_github_ssh_connection() {
-                        Err(GitScriptError::HomeNotAvailable(e)) => {
-                            println!(
-                                "It seem that there is no home for me... Im kinda homelesss......"
-                            );
-                            println!("{e}");
-                            println!("Would you like to try again?");
-                            if confirm_dialog(ConfirmDialogResponse::Yes)
-                                == ConfirmDialogResponse::No
-                            {
-                                break;
-                            }
-                        }
-                        Err(GitScriptError::CouldNotStart(e)) => {
-                            println!(
-                                "An Error ocurred! It seems that something wasnt able to start..."
-                            );
-                            println!("{e}");
-                            println!("Would you like to try again?");
-                            if confirm_dialog(ConfirmDialogResponse::Yes)
-                                == ConfirmDialogResponse::No
-                            {
-                                break;
-                            }
-                        }
-                        Err(GitScriptError::ComandFailed(e)) => {
-                            println!(
-                                "An Error ocurred! It seems that something wasnt able to execute for complete..."
-                            );
-                            println!("{e}");
-                            println!("Would you like to try again?");
-                            if confirm_dialog(ConfirmDialogResponse::Yes)
-                                == ConfirmDialogResponse::No
-                            {
-                                break;
-                            }
-                        }
-                        Ok(_) => {
-                            println!("All clear!");
-                            is_shh_configured = true;
+            let is_shh_configured = if is_gitinfo_configured {
+                println!("\nNow, lets create a new shh!");
+                match configure_git_shh() {
+                    Err(GitScriptError::HomeNotAvailable(e)) => {
+                        println!("It seems that HOME is not available...");
+                        println!("{e}");
+                        println!("Would you like to try again?");
+                        if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
                             break;
                         }
+                        false
+                    }
+                    Err(GitScriptError::CouldNotStart(e)) => {
+                        println!("It seems that the shh command could not start...");
+                        println!("{e}");
+                        println!("Would you like to try again?");
+                        if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
+                            break;
+                        }
+                        false
+                    }
+                    Err(GitScriptError::ComandFailed(e)) => {
+                        println!("It seems that the shh command coud not execute...");
+                        println!("{e}");
+                        println!("Would you like to try again?");
+                        if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
+                            break;
+                        }
+                        false
+                    }
+                    Ok(_) => {
+                        println!("All clear!! Shh created!");
+                        true
                     }
                 }
+            } else {
+                false
+            };
+
+            let is_shh_copyed = if is_shh_configured {
+                println!("\nNow, lets copy the shh!");
+                match copy_git_ssh() {
+                    Err(GitScriptError::HomeNotAvailable(e)) => {
+                        println!("It seems that there is no HOME available...");
+                        println!("{e}");
+                        println!("Would you like to try again?");
+                        if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
+                            break;
+                        }
+                        false
+                    }
+                    Err(GitScriptError::ComandFailed(e)) => {
+                        println!("It seems that the command couldnt execute...");
+                        println!("{e}");
+                        println!("Would you like to try again?");
+                        if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
+                            break;
+                        }
+                        false
+                    }
+                    Err(GitScriptError::CouldNotStart(e)) => {
+                        println!("It seems that the command couldnt start...");
+                        println!("{e}");
+                        println!("Would you like to try again?");
+                        if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
+                            break;
+                        }
+                        false
+                    }
+                    Ok(_) => {
+                        println!("All clear!! Shh copyed!");
+                        true
+                    }
+                }
+            } else {
+                false
+            };
+
+            is_github_configured = if is_shh_copyed {
+                println!("\n\nThe shh key is on your clipboard!!!!!");
+                println!(
+                    "\nNow, go to https://github.com/settings/keys and configure your key!!!!"
+                );
+                println!("When done, please go back so we can test if the connection is right!");
+                let mut input = String::new();
+                io::stdin().read_line(&mut input).unwrap_or_default();
+
+                println!("Testing conection!!!");
+                match test_github_ssh_connection() {
+                    Err(ScriptError::ComandFailed(e)) => {
+                        println!("It seems that the command couldnt execute...");
+                        println!("{e}");
+                        println!("Would you like to try again?");
+                        if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
+                            break;
+                        }
+                        false
+                    }
+                    Err(ScriptError::CouldNotStart(e)) => {
+                        println!("It seems that the command couldnt start...");
+                        println!("{e}");
+                        println!("Would you like to try again?");
+                        if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
+                            break;
+                        }
+                        false
+                    }
+                    Ok(_) => true,
+                }
+            } else {
+                false
+            };
+
+            if is_github_configured {
+                println!("All done!!!!!!!!!");
+                break;
             }
         }
+    }
 
-        if is_shh_configured {
+    if is_github_configured {
+        println!("Wanna configure all related to github now?");
+        if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::Yes {
             loop {
                 match configure_niri_with_ssh() {
                     Err(GitScriptError::HomeNotAvailable(e)) => {
@@ -428,6 +475,44 @@ fn main() {
                     }
                     Ok(_) => {
                         println!("All clear!! Nvim configured!");
+                        break;
+                    }
+                }
+            }
+            loop {
+                match configure_alacritty_with_shh() {
+                    Err(GitScriptError::HomeNotAvailable(e)) => {
+                        println!(
+                            "It seem that there is no home for me... Im kinda homelesss......"
+                        );
+                        println!("{e}");
+                        println!("Would you like to try again?");
+                        if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
+                            break;
+                        }
+                    }
+                    Err(GitScriptError::CouldNotStart(e)) => {
+                        println!(
+                            "An Error ocurred! It seems that git wasnt able to start.... Waaaaa?"
+                        );
+                        println!("{e}");
+                        println!("Would you like to try again?");
+                        if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
+                            break;
+                        }
+                    }
+                    Err(GitScriptError::ComandFailed(e)) => {
+                        println!(
+                            "An Error ocurred! It seems that git wasnt able to download... Maybe the repo doenst exist anymore or it has a typo?"
+                        );
+                        println!("{e}");
+                        println!("Would you like to try again?");
+                        if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
+                            break;
+                        }
+                    }
+                    Ok(_) => {
+                        println!("All clear!! Alacritty configured!");
                         break;
                     }
                 }

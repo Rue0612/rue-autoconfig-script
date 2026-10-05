@@ -8,8 +8,8 @@ pub fn install_aur_apps() -> Result<(), ScriptError> {
         "bs-manager-git",
     ];
 
-    let status = Command::new("sudo")
-        .args(["paru", "-S"])
+    let status = Command::new("paru")
+        .arg("-S")
         .args(aur_apps)
         .status()
         .map_err(ScriptError::CouldNotStart)?;

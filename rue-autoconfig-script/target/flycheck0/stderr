@@ -1,2 +1,4 @@
     Checking rue-autoconfig-script v0.1.0 (/home/rue/Projetos/rue-autoconfig-script/rue-autoconfig-script)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s
+error: could not compile `rue-autoconfig-script` (bin "rue-autoconfig-script") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `rue-autoconfig-script` (bin "rue-autoconfig-script" test) due to 1 previous error
