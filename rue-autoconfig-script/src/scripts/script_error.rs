@@ -12,3 +12,11 @@ pub enum GitScriptError {
     ComandFailed(ExitStatus),
     HomeNotAvailable(env::VarError),
 }
+
+#[derive(Debug)]
+pub enum GitShhScriptError {
+    CouldNotStart(std::io::Error),
+    ComandFailed(ExitStatus),
+    HomeNotAvailable(env::VarError),
+    Warning(ScriptError),
+}

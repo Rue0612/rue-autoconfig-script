@@ -1,12 +1,12 @@
 use std::{env, fs::File, process::Command, process::Stdio};
 
-use crate::scripts::script_error::{GitScriptError, ScriptError};
+use crate::scripts::script_error::{GitScriptError, GitShhScriptError, ScriptError};
 
 // ssh-keygen -t ed25519 -C
 // ssh-add ~/.ssh/id_ed25519
 //
-pub fn configure_git_shh() -> Result<(), GitScriptError> {
-    let home = env::var("HOME").map_err(GitScriptError::HomeNotAvailable)?;
+pub fn configure_git_shh() -> Result<(), GitShhScriptError> {
+    let home = env::var("HOME").map_err(GitShhScriptError::HomeNotAvailable)?;
 
     let github_email = "\"69476182+Rue0612@users.noreply.github.com\"";
     let shh_default_folder = format!("{home}/.ssh/id_ed25519");
@@ -15,19 +15,21 @@ pub fn configure_git_shh() -> Result<(), GitScriptError> {
         .args(["-t", "ed25519", "-C"])
         .arg(github_email)
         .status()
-        .map_err(GitScriptError::CouldNotStart)?;
+        .map_err(GitShhScriptError::CouldNotStart)?;
 
     if !status.success() {
-        return Err(GitScriptError::ComandFailed(status));
+        return Err(GitShhScriptError::ComandFailed(status));
     }
 
     let status = Command::new("ssh-add")
         .arg(shh_default_folder)
         .status()
-        .map_err(GitScriptError::CouldNotStart)?;
+        .map_err(GitShhScriptError::CouldNotStart)?;
 
     if !status.success() {
-        return Err(GitScriptError::ComandFailed(status));
+        return Err(GitShhScriptError::Warning(ScriptError::ComandFailed(
+            status,
+        )));
     }
 
     Ok(())

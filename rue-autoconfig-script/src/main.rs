@@ -19,7 +19,7 @@ use crate::{
             install_flatpak_apps_script::install_flatpack_apps,
             install_pacman_apps_script::install_pacman_apps,
         },
-        script_error::{GitScriptError, ScriptError},
+        script_error::{GitScriptError, GitShhScriptError, ScriptError},
     },
     util::confirm_dialog_util::{ConfirmDialogResponse, confirm_dialog},
 };
@@ -207,7 +207,7 @@ fn main() {
             let is_shh_configured = if is_gitinfo_configured {
                 println!("\nNow, lets create a new shh!");
                 match configure_git_shh() {
-                    Err(GitScriptError::HomeNotAvailable(e)) => {
+                    Err(GitShhScriptError::HomeNotAvailable(e)) => {
                         println!("It seems that HOME is not available...");
                         println!("{e}");
                         println!("Would you like to try again?");
@@ -216,7 +216,7 @@ fn main() {
                         }
                         false
                     }
-                    Err(GitScriptError::CouldNotStart(e)) => {
+                    Err(GitShhScriptError::CouldNotStart(e)) => {
                         println!("It seems that the shh command could not start...");
                         println!("{e}");
                         println!("Would you like to try again?");
@@ -225,7 +225,7 @@ fn main() {
                         }
                         false
                     }
-                    Err(GitScriptError::ComandFailed(e)) => {
+                    Err(GitShhScriptError::ComandFailed(e)) => {
                         println!("It seems that the shh command coud not execute...");
                         println!("{e}");
                         println!("Would you like to try again?");
@@ -233,6 +233,11 @@ fn main() {
                             break;
                         }
                         false
+                    }
+                    Err(GitShhScriptError::Warning(e)) => {
+                        println!("Warning, connection to shh client not found");
+                        println!("{e:?}");
+                        true
                     }
                     Ok(_) => {
                         println!("All clear!! Shh created!");
