@@ -1,0 +1,4 @@
+    Checking rue-autoconfig-script v0.1.0 (/home/rue/Projetos/rue-autoconfig-script/rue-autoconfig-script)
+error: could not compile `rue-autoconfig-script` (bin "rue-autoconfig-script") due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `rue-autoconfig-script` (bin "rue-autoconfig-script" test) due to 2 previous errors
