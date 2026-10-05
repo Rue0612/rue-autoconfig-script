@@ -13,6 +13,7 @@ pub fn install_pacman_apps() -> Result<(), ScriptError> {
         "tree-sitter-cli",
         "unzip",
         "wl-clipboard",
+        "rustup",
         "neovim", // workspace apps
         "steam",
         "vesktop-bin",

@@ -5,6 +5,7 @@ use std::io;
 
 use crate::{
     scripts::{
+        configure_rustup_script::config_rustup,
         git_scripts::{
             configure_alacritty_script::configure_alacritty_with_shh,
             configure_fastfetch_script::configure_fastfatch_with_ssh,
@@ -63,6 +64,38 @@ fn main() {
                 }
                 Ok(_) => {
                     println!("All clear!! Pacman apps are dowloaded!");
+                    break;
+                }
+            };
+        }
+    }
+
+    println!("\n\nAll done! Now, wanna get rusty? I mean, install rust? *-*");
+    if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::Yes {
+        loop {
+            match config_rustup() {
+                Err(ScriptError::CouldNotStart(e)) => {
+                    println!(
+                        "An Error ocurred! It seems that rust wasnt able to start.... Waaaaa?"
+                    );
+                    println!("{e}");
+                    println!("Would you like to try again?");
+                    if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
+                        break;
+                    }
+                }
+                Err(ScriptError::ComandFailed(e)) => {
+                    println!(
+                        "An Error ocurred! It seems that rust wasnt able to download... Maybe an app doenst exist anymore or it has a typo?"
+                    );
+                    println!("{e}");
+                    println!("Would you like to try again?");
+                    if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
+                        break;
+                    }
+                }
+                Ok(_) => {
+                    println!("All clear!!!!! Rust ready!");
                     break;
                 }
             };
