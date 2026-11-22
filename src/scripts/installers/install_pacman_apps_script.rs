@@ -14,7 +14,11 @@ pub fn install_pacman_apps() -> Result<(), ScriptError> {
         "unzip",
         "wl-clipboard",
         "rustup",
+        "npm", // Mason's markdownlint and TypeScript tooling
         "neovim", // workspace apps
+        "opencode", // TUI
+        "opencode-desktop", // GUI (depends on opencode)
+        "alacritty", // terminal used by nvim's <leader>tt
         "steam",
         "vesktop-bin",
         "amberol",

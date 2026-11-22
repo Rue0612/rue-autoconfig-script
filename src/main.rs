@@ -13,6 +13,7 @@ use crate::{
             configure_git_info_script::configure_git_info,
             configure_niri_script::{configure_niri, configure_niri_with_ssh},
             configure_nvim_script::configure_nvim_with_ssh,
+            configure_opencode_script::configure_opencode_with_ssh,
             configure_ssh_script::{configure_git_shh, copy_git_ssh, test_github_ssh_connection},
         },
         installers::{
@@ -551,6 +552,44 @@ fn main() {
                     }
                     Ok(_) => {
                         println!("All clear!! Alacritty configured!");
+                        break;
+                    }
+                }
+            }
+            loop {
+                match configure_opencode_with_ssh() {
+                    Err(GitScriptError::HomeNotAvailable(e)) => {
+                        println!(
+                            "It seem that there is no home for me... Im kinda homelesss......"
+                        );
+                        println!("{e}");
+                        println!("Would you like to try again?");
+                        if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
+                            break;
+                        }
+                    }
+                    Err(GitScriptError::CouldNotStart(e)) => {
+                        println!(
+                            "An Error ocurred! It seems that git wasnt able to start.... Waaaaa?"
+                        );
+                        println!("{e}");
+                        println!("Would you like to try again?");
+                        if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
+                            break;
+                        }
+                    }
+                    Err(GitScriptError::ComandFailed(e)) => {
+                        println!(
+                            "An Error ocurred! It seems that git wasnt able to download... Maybe the repo doenst exist anymore or it has a typo?"
+                        );
+                        println!("{e}");
+                        println!("Would you like to try again?");
+                        if confirm_dialog(ConfirmDialogResponse::Yes) == ConfirmDialogResponse::No {
+                            break;
+                        }
+                    }
+                    Ok(_) => {
+                        println!("All clear!! Opencode configured!");
                         break;
                     }
                 }
